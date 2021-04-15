@@ -1,7 +1,7 @@
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Cat {
-    //Status status;
+    Status status;
     String type;
     Boolean deleted;
     String id;
@@ -14,7 +14,7 @@ public class Cat {
     Boolean used;
 
     public Cat(
-            //@JsonProperty("status") Status status,
+            @JsonProperty("status") Status status,
             @JsonProperty("type") String type,
             @JsonProperty("deleted") Boolean deleted,
             @JsonProperty("_id") String id,
@@ -26,7 +26,7 @@ public class Cat {
             @JsonProperty("createAt") String createAt,
             @JsonProperty("used") Boolean used
     ){
-        //this.status = status;
+        this.status = status;
         this.type = type;
         this.deleted = deleted;
         this.id = id;
@@ -39,7 +39,7 @@ public class Cat {
         this.used = used;
     }
 
-    //public Status getStatus(){return status;}
+    public Status getStatus(){return status;}
 
     public String getType() {
         return type;
@@ -85,7 +85,7 @@ public class Cat {
                 "\nID: " + id +
                 "\nDeleted: " + deleted +
                 "\nUser: " + user +
-                // "\nStatus: " + getStatus() +
+                "\nStatus: " + getStatus() +
                 "\nText: " + text + "}";
     }
 }

@@ -1,17 +1,19 @@
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
@@ -43,8 +45,9 @@ public class Main {
         String body = new String(response.getEntity().getContent().readAllBytes(), UTF_8);
         //System.out.println(body);
 
-        //сопоставление JSON объекта с классом Cat
-        List<Cat> cats = jsonToCat(body);
+        //преобразование JSON в java объект
+        ObjectMapper mapper = new ObjectMapper();
+        List<Cat> cats = mapper.readValue(body, new TypeReference<List<Cat>>() {});
 
         //фильтрация фактов.
         System.out.println("\nФильтр фактов:");
@@ -52,34 +55,8 @@ public class Main {
                 .limit(5)
                 .filter(x -> x.type.equals("cat"))
                 .filter(x -> x.deleted.equals(false))
-                //.filter(x -> x.text.startsWith("Wikipedia"))
+                .filter(x -> x.text.startsWith("Wikipedia"))
                 .collect(Collectors.toList());
         System.out.println(cats2);
-    }
-
-    //сопоставление JSON объекта с классом Cat
-    public static List<Cat> jsonToCat(String body) throws ParseException {
-        List<Cat> cats = new ArrayList<>();
-        Object obj = new JSONParser().parse(body);
-        JSONArray jsonArray = (JSONArray) obj;
-        for (Object o : jsonArray) {
-            JSONObject jsonObject = (JSONObject) o;
-            //Status status = (Status) jsonObject.get("status");
-            String type = (String) jsonObject.get("type");
-            Boolean deleted = (Boolean) jsonObject.get("deleted");
-            String id = (String) jsonObject.get("_id");
-            String user = (String) jsonObject.get("user");
-            String text= (String) jsonObject.get("text");
-            long v = (Long) jsonObject.get("__v");;
-            String source = (String) jsonObject.get("source");
-            String updatedAt = (String) jsonObject.get("updatedAt");
-            String createdAt = (String) jsonObject.get("createdAt");
-            Boolean used = (Boolean) jsonObject.get("used");
-
-            Cat cat = new Cat(type, deleted, id, user, text, v, source, updatedAt, createdAt, used);
-            cats.add(cat);
-            //System.out.println(cat.toString());
-        }
-        return cats;
     }
 }
